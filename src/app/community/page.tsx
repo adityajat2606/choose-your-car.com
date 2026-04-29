@@ -5,7 +5,7 @@ export default function CommunityPage() {
     <BusinessInfoPage
       eyebrow="Resources"
       title="Community"
-      description="Connect with local publishers, listing owners, and classifieds contributors sharing practical growth and quality insights."
+      description="Connect with local publishers and listing owners sharing practical growth and quality insights."
       actions={[
         { label: 'Read help guides', href: '/help', variant: 'outline' },
         { label: 'Join conversation', href: '/contact' },

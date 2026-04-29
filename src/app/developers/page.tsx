@@ -22,10 +22,6 @@ export default function DevelopersPage() {
           description: 'Sync structured business records with category metadata, location signals, and media fields.',
         },
         {
-          title: 'Classified lifecycle management',
-          description: 'Programmatically create, update, expire, and renew short-lifecycle posts.',
-        },
-        {
           title: 'Search and filter integration',
           description: 'Use query and category parameters to surface relevant content inside your own internal tools.',
         },

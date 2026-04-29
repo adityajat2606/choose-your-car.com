@@ -5,11 +5,10 @@ import { siteContent } from '@/config/site.content'
 import { getFactoryState } from '@/design/factory/get-factory-state'
 import { FOOTER_OVERRIDE_ENABLED, FooterOverride } from '@/overrides/footer'
 
-const taskIcons: Record<TaskKey, any> = {
+const taskIcons: Partial<Record<TaskKey, any>> = {
   article: FileText,
   listing: Building2,
   sbm: LayoutGrid,
-  classified: Tag,
   image: ImageIcon,
   profile: User,
   social: LayoutGrid,
@@ -19,7 +18,7 @@ const taskIcons: Record<TaskKey, any> = {
 }
 
 const footerLinks = {
-  platform: SITE_CONFIG.tasks.filter((task) => task.enabled).map((task) => ({
+  platform: SITE_CONFIG.tasks.filter((task) => task.enabled && task.key !== 'classified').map((task) => ({
     name: task.label,
     href: task.route,
     icon: taskIcons[task.key] || LayoutGrid,

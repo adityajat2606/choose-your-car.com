@@ -19,7 +19,7 @@ export default function StatusPage() {
       cards={[
         {
           title: 'Publishing services: Operational',
-          description: 'Listing and classified create/update actions are processing normally with expected response times.',
+          description: 'Listing create/update actions are processing normally with expected response times.',
         },
         {
           title: 'Search services: Operational',

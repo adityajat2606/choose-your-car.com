@@ -32,17 +32,16 @@ export async function generateMetadata(): Promise<Metadata> {
 type EnabledTask = (typeof SITE_CONFIG.tasks)[number]
 type TaskFeedItem = { task: EnabledTask; posts: SitePost[] }
 
-const taskIcons: Record<TaskKey, any> = {
+const taskIcons: Partial<Record<TaskKey, any>> = {
   article: FileText,
   listing: Building2,
   sbm: Bookmark,
-  classified: Tag,
   image: ImageIcon,
   profile: User,
 }
 
 function resolveTaskKey(value: unknown, fallback: TaskKey): TaskKey {
-  if (value === 'listing' || value === 'classified' || value === 'article' || value === 'image' || value === 'profile' || value === 'sbm') return value
+  if (value === 'listing' || value === 'article' || value === 'image' || value === 'profile' || value === 'sbm') return value
   return fallback
 }
 
@@ -134,21 +133,19 @@ function getCurationTone() {
   }
 }
 
-function DirectoryHome({ primaryTask, enabledTasks, listingPosts, classifiedPosts, profilePosts, brandPack }: {
+function DirectoryHome({ primaryTask, enabledTasks, listingPosts, profilePosts, brandPack }: {
   primaryTask?: EnabledTask
   enabledTasks: EnabledTask[]
   listingPosts: SitePost[]
-  classifiedPosts: SitePost[]
   profilePosts: SitePost[]
   brandPack: string
 }) {
   const tone = getDirectoryTone(brandPack)
-  const featuredListings = (listingPosts.length ? listingPosts : classifiedPosts).slice(0, 4)
-  const featuredClassifieds = (classifiedPosts.length ? classifiedPosts : listingPosts).slice(0, 4)
+  const featuredListings = listingPosts.slice(0, 4)
   const heroSpotlight = featuredListings[0]
   const heroSpotlightMeta = getPostMeta(heroSpotlight)
-  const featuredTaskKey: TaskKey = listingPosts.length ? 'listing' : 'classified'
-  const quickRoutes = enabledTasks.slice(0, 4)
+  const featuredTaskKey: TaskKey = 'listing'
+  const quickRoutes = enabledTasks.filter((task) => task.key !== 'classified').slice(0, 4)
 
   return (
     <main>
@@ -161,7 +158,7 @@ function DirectoryHome({ primaryTask, enabledTasks, listingPosts, classifiedPost
                 Business discovery network
               </span>
               <h1 className={`mt-6 max-w-4xl text-5xl font-semibold tracking-[-0.06em] sm:text-6xl ${tone.title}`}>
-                Find trusted businesses and local deals in one focused classifieds hub.
+                Find trusted businesses and local services in one focused directory.
               </h1>
               <p className={`mt-6 max-w-2xl text-base leading-8 ${tone.muted}`}>{SITE_CONFIG.description}</p>
 
@@ -173,15 +170,12 @@ function DirectoryHome({ primaryTask, enabledTasks, listingPosts, classifiedPost
                 <Link href={primaryTask?.route || '/listings'} className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold ${tone.actionAlt}`}>
                   Browse Listings
                 </Link>
-                <Link href="/classifieds" className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold ${tone.actionAlt}`}>
-                  Explore Classifieds
-                </Link>
               </div>
 
               <div className="mt-8 grid gap-3 sm:grid-cols-3">
                 {[
                   ['Verified listings', `${featuredListings.length || 4}+ highlighted businesses`],
-                  ['Classified velocity', `${featuredClassifieds.length || 4}+ local opportunities`],
+                  ['Local coverage', 'Comprehensive business directory'],
                   ['Action-first UX', 'Call, visit, save, compare'],
                 ].map(([label, value]) => (
                   <div key={label} className={`rounded-[1.4rem] p-4 ${tone.soft}`}>
@@ -263,22 +257,6 @@ function DirectoryHome({ primaryTask, enabledTasks, listingPosts, classifiedPost
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6 lg:px-8">
-        <div className={`rounded-[2.2rem] p-7 ${tone.surfacePanel}`}>
-          <div className="flex items-end justify-between gap-4 border-b border-[#73A5CA]/16 pb-5">
-            <div>
-              <p className={`text-xs font-semibold uppercase tracking-[0.24em] ${tone.surfaceMuted}`}>Fresh classifieds</p>
-              <h2 className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[#1f2d3a]">Urgent deals, offers, and local opportunities.</h2>
-            </div>
-            <Link href="/classifieds" className="text-sm font-semibold text-[#E87F24] hover:opacity-80">Browse classifieds</Link>
-          </div>
-          <div className="mt-7 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {featuredClassifieds.map((post) => (
-              <TaskPostCard key={post.id} post={post} href={getTaskHref('classified', post.slug)} taskKey="classified" />
-            ))}
-          </div>
-        </div>
-      </section>
 
       <section className={`${tone.shell}`}>
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-8">
@@ -296,16 +274,16 @@ function DirectoryHome({ primaryTask, enabledTasks, listingPosts, classifiedPost
             </Link>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
-            {(profilePosts.length ? profilePosts : classifiedPosts).slice(0, 4).map((post) => {
+            {profilePosts.slice(0, 4).map((post) => {
               const meta = getPostMeta(post)
-              const taskKey = resolveTaskKey(post.task, profilePosts.length ? 'profile' : 'classified')
+              const taskKey = 'profile'
               return (
                 <Link key={post.id} href={getTaskHref(taskKey, post.slug)} className={`overflow-hidden rounded-[1.8rem] ${tone.surfacePanel}`}>
                   <div className="relative h-44 overflow-hidden">
                     <ContentImage src={getPostImage(post)} alt={post.title} fill className="object-cover" />
                   </div>
                   <div className="p-5">
-                    <p className={`text-[11px] font-semibold uppercase tracking-[0.24em] ${tone.surfaceMuted}`}>{meta.category || post.task || 'Profile'}</p>
+                    <p className={`text-[11px] font-semibold uppercase tracking-[0.24em] ${tone.surfaceMuted}`}>{meta.category || 'Profile'}</p>
                     <h3 className="mt-2 text-xl font-semibold text-[#1f2d3a]">{post.title}</h3>
                     <p className={`mt-2 text-sm leading-7 ${tone.surfaceMuted}`}>{post.summary || 'Quick access to local information and related surfaces.'}</p>
                     {meta.location ? <p className={`mt-2 text-xs font-medium ${tone.surfaceMuted}`}>{meta.location}</p> : null}
@@ -427,7 +405,7 @@ function VisualHome({ primaryTask, imagePosts, profilePosts, articlePosts }: { p
             {gallery.slice(0, 5).map((post, index) => (
               <Link
                 key={post.id}
-                href={getTaskHref(resolveTaskKey(post.task, 'image'), post.slug)}
+                href={getTaskHref('image', post.slug)}
                 className={index === 0 ? `col-span-2 row-span-2 overflow-hidden rounded-[2.4rem] ${tone.panel}` : `overflow-hidden rounded-[1.8rem] ${tone.soft}`}
               >
                 <div className={index === 0 ? 'relative h-[360px]' : 'relative h-[170px]'}>
@@ -492,7 +470,7 @@ function CurationHome({ primaryTask, bookmarkPosts, profilePosts, articlePosts }
 
           <div className="grid gap-4 md:grid-cols-2">
             {collections.map((post) => (
-              <Link key={post.id} href={getTaskHref(resolveTaskKey(post.task, 'sbm'), post.slug)} className={`rounded-[1.8rem] p-6 ${tone.panel}`}>
+              <Link key={post.id} href={getTaskHref('sbm', post.slug)} className={`rounded-[1.8rem] p-6 ${tone.panel}`}>
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] opacity-70">Collection</p>
                 <h3 className="mt-3 text-2xl font-semibold">{post.title}</h3>
                 <p className={`mt-3 text-sm leading-8 ${tone.muted}`}>{post.summary || 'A calmer bookmark surface with room for context and grouping.'}</p>
@@ -544,7 +522,6 @@ export default async function HomePage() {
   const primaryTask = enabledTasks.find((task) => task.key === recipe.primaryTask) || enabledTasks[0]
   const supportTasks = enabledTasks.filter((task) => task.key !== primaryTask?.key)
   const listingPosts = taskFeed.find(({ task }) => task.key === 'listing')?.posts || []
-  const classifiedPosts = taskFeed.find(({ task }) => task.key === 'classified')?.posts || []
   const articlePosts = taskFeed.find(({ task }) => task.key === 'article')?.posts || []
   const imagePosts = taskFeed.find(({ task }) => task.key === 'image')?.posts || []
   const profilePosts = taskFeed.find(({ task }) => task.key === 'profile')?.posts || []
@@ -581,7 +558,6 @@ export default async function HomePage() {
           primaryTask={primaryTask}
           enabledTasks={enabledTasks}
           listingPosts={listingPosts}
-          classifiedPosts={classifiedPosts}
           profilePosts={profilePosts}
           brandPack={recipe.brandPack}
         />

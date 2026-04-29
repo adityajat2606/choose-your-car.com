@@ -1,24 +1,18 @@
+import { notFound } from "next/navigation";
 import { TaskDetailPage } from "@/components/tasks/task-detail-page";
-import { buildPostMetadata, buildTaskMetadata } from "@/lib/seo";
-import { fetchTaskPostBySlug, fetchTaskPosts } from "@/lib/task-data";
+import { fetchTaskPosts } from "@/lib/task-data";
+import { buildPostMetadata } from "@/lib/seo";
 
 export const revalidate = 3;
 
-export async function generateStaticParams() {
-  const posts = await fetchTaskPosts("classified", 50);
-  if (!posts.length) {
-    return [{ slug: "placeholder" }];
-  }
-  return posts.map((post) => ({ slug: post.slug }));
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const post = (await fetchTaskPosts("classified", 200)).find((item) => item.slug === params.slug);
+  if (!post) return {};
+  return buildPostMetadata("classified", post);
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const resolvedParams = await params;
-  const post = await fetchTaskPostBySlug("classified", resolvedParams.slug);
-  return post ? await buildPostMetadata("classified", post) : await buildTaskMetadata("classified");
-}
-
-export default async function ClassifiedDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const resolvedParams = await params;
-  return <TaskDetailPage task="classified" slug={resolvedParams.slug} />;
+export default async function ClassifiedDetailPage({ params }: { params: { slug: string } }) {
+  const post = (await fetchTaskPosts("classified", 200)).find((item) => item.slug === params.slug);
+  if (!post) notFound();
+  return <TaskDetailPage task="classified" slug={params.slug} />;
 }

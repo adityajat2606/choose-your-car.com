@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { ArrowRight, Building2, Clock3, FileText, Image as ImageIcon, LayoutGrid, MapPin, Tag, User } from 'lucide-react'
 import { NavbarShell } from '@/components/shared/navbar-shell'
 import { Footer } from '@/components/shared/footer'
@@ -10,6 +10,7 @@ import { SITE_CONFIG, getTaskConfig, type TaskKey } from '@/lib/site-config'
 import { CATEGORY_OPTIONS, normalizeCategory } from '@/lib/categories'
 import { taskIntroCopy } from '@/config/site.content'
 import { getFactoryState } from '@/design/factory/get-factory-state'
+import { getDirectoryUiPreset } from '@/design/directory-ui'
 import { TASK_LIST_PAGE_OVERRIDE_ENABLED, TaskListPageOverride } from '@/overrides/task-list-page'
 import type { SitePost } from '@/lib/site-connector'
 
@@ -131,8 +132,9 @@ export async function TaskListPage({ task, category }: { task: TaskKey; category
     name: post.title,
   }))
   const { recipe } = getFactoryState()
+  const directoryUi = getDirectoryUiPreset()
   const layoutKey = recipe.taskLayouts[task as keyof typeof recipe.taskLayouts] || `${task}-${task === 'listing' ? 'directory' : 'editorial'}`
-  const shellClass = variantShells[layoutKey as keyof typeof variantShells] || 'bg-background'
+  const shellClass = task === 'listing' ? directoryUi.shell : variantShells[layoutKey as keyof typeof variantShells] || 'bg-background'
   const Icon = taskIcons[task] || LayoutGrid
 
   const isDark = ['image-masonry', 'image-portfolio', 'profile-creator'].includes(layoutKey)
@@ -233,7 +235,7 @@ export async function TaskListPage({ task, category }: { task: TaskKey; category
 
         {(layoutKey === 'listing-directory' || layoutKey === 'listing-showcase' || layoutKey === 'classified-bulletin' || layoutKey === 'classified-market') && spotlightPost ? (
           <section className="mb-12 grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
-            <div className={`overflow-hidden rounded-[2rem] ${ui.panel}`}>
+            <Link href={`${taskConfig?.route || '#'}/${spotlightPost.slug}`} className={`overflow-hidden rounded-[2rem] ${ui.panel} transition hover:shadow-lg`}>
               <div className="grid md:grid-cols-[1fr_1fr]">
                 <div className="relative min-h-[260px] overflow-hidden bg-muted">
                   <ContentImage src={getPostImage(spotlightPost)} alt={spotlightPost.title} fill className="object-cover" />
@@ -247,13 +249,13 @@ export async function TaskListPage({ task, category }: { task: TaskKey; category
                     {getPostMeta(spotlightPost).location ? <span className={`rounded-full px-3 py-1 ${ui.soft}`}>{getPostMeta(spotlightPost).location}</span> : null}
                     {getPostMeta(spotlightPost).price ? <span className={`rounded-full px-3 py-1 ${ui.soft}`}>{getPostMeta(spotlightPost).price}</span> : null}
                   </div>
-                  <Link href={`${taskConfig?.route || '#'}?category=${encodeURIComponent(normalizeCategory(getPostMeta(spotlightPost).category || 'all'))}`} className={`mt-5 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${ui.button}`}>
-                    Explore similar
+                  <div className={`mt-5 inline-flex items-center gap-2 text-sm font-semibold ${ui.button}`}>
+                    View details
                     <ArrowRight className="h-4 w-4" />
-                  </Link>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
 
             <div className="grid gap-4">
               <div className={`rounded-[1.6rem] p-5 ${ui.soft}`}>
@@ -290,36 +292,6 @@ export async function TaskListPage({ task, category }: { task: TaskKey; category
                   ))}
                 </div>
               </div>
-            </div>
-          </section>
-        ) : null}
-
-        {(layoutKey === 'listing-directory' || layoutKey === 'listing-showcase' || layoutKey === 'classified-bulletin' || layoutKey === 'classified-market') && secondaryPosts.length ? (
-          <section className={`mb-12 rounded-[2rem] p-6 ${ui.panel}`}>
-            <div className="mb-5 flex items-center justify-between">
-              <div>
-                <p className={`text-xs font-semibold uppercase tracking-[0.22em] ${ui.muted}`}>Recently added</p>
-                <h2 className="mt-2 text-2xl font-semibold text-foreground">Fresh {taskConfig?.label?.toLowerCase() || task} you can act on now.</h2>
-              </div>
-              <Link href={taskConfig?.route || '#'} className="text-sm font-semibold text-primary hover:opacity-80">View all</Link>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              {secondaryPosts.map((post) => {
-                const meta = getPostMeta(post)
-                return (
-                  <Link key={post.id} href={`${taskConfig?.route || '#'}?category=${encodeURIComponent(normalizeCategory(meta.category || 'all'))}`} className={`rounded-[1.4rem] p-4 transition hover:-translate-y-0.5 ${ui.soft}`}>
-                    <div className="relative h-28 overflow-hidden rounded-xl">
-                      <ContentImage src={getPostImage(post)} alt={post.title} fill className="object-cover" />
-                    </div>
-                    <h3 className="mt-3 line-clamp-2 text-sm font-semibold text-foreground">{post.title}</h3>
-                    <p className={`mt-2 line-clamp-2 text-xs ${ui.muted}`}>{post.summary || 'Discover details and contact directly.'}</p>
-                    <div className={`mt-3 flex items-center justify-between text-xs ${ui.muted}`}>
-                      <span>{meta.category || 'General'}</span>
-                      <span className="inline-flex items-center gap-1"><Clock3 className="h-3.5 w-3.5" />New</span>
-                    </div>
-                  </Link>
-                )
-              })}
             </div>
           </section>
         ) : null}
@@ -453,5 +425,6 @@ export async function TaskListPage({ task, category }: { task: TaskKey; category
     </div>
   )
 }
+
 
 
