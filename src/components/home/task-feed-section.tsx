@@ -6,9 +6,8 @@ import { TaskFeedCarousel } from "@/components/home/task-feed-carousel";
 import { siteContent } from "@/config/site.content";
 import { SITE_THEME } from "@/config/site.theme";
 
-const taskIcons: Record<string, typeof Building2> = {
+const taskIcons: Partial<Record<string, typeof Building2>> = {
   listing: Building2,
-  classified: Tag,
   article: FileText,
   image: ImageIcon,
   profile: Users,

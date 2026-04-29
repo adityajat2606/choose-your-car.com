@@ -24,7 +24,7 @@ export default function TermsPage() {
         },
         {
           title: 'Acceptable use requirements',
-          description: 'No fraudulent listings, deceptive classifieds, harassment, malicious automation, or unlawful activity.',
+          description: 'No fraudulent listings, harassment, malicious automation, or unlawful activity.',
         },
         {
           title: 'Enforcement and suspension',

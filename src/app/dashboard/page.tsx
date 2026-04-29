@@ -37,7 +37,7 @@ import { NavbarShell } from "@/components/shared/navbar-shell"
 import { useAuth } from "@/lib/auth-context"
 import { useToast } from "@/components/ui/use-toast"
 import { loadFromStorage, storageKeys } from "@/lib/local-storage"
-import type { Article, Listing, ClassifiedAd } from "@/types"
+import type { Article, Listing } from "@/types"
 import {
   Area,
   AreaChart,
@@ -97,12 +97,10 @@ export default function DashboardPage() {
   const { toast } = useToast()
   const [storedArticles, setStoredArticles] = useState<Article[]>([])
   const [storedListings, setStoredListings] = useState<Listing[]>([])
-  const [storedAds, setStoredAds] = useState<ClassifiedAd[]>([])
 
   const loadDashboardData = () => {
     setStoredArticles(loadFromStorage<Article[]>(storageKeys.articles, []))
     setStoredListings(loadFromStorage<Listing[]>(storageKeys.listings, []))
-    setStoredAds(loadFromStorage<ClassifiedAd[]>(storageKeys.ads, []))
   }
 
   useEffect(() => {
@@ -135,17 +133,12 @@ export default function DashboardPage() {
     () => (user ? storedListings.filter((listing) => listing.owner.id === user.id) : []),
     [storedListings, user]
   )
-  const userAds = useMemo(
-    () => (user ? storedAds.filter((ad) => ad.seller.id === user.id) : []),
-    [storedAds, user]
-  )
 
   const totalViews = useMemo(
     () =>
       userArticles.reduce((sum, article) => sum + (article.views || 0), 0) +
-      userListings.reduce((sum, listing) => sum + (listing.views || 0), 0) +
-      userAds.reduce((sum, ad) => sum + (ad.views || 0), 0),
-    [userAds, userArticles, userListings]
+      userListings.reduce((sum, listing) => sum + (listing.views || 0), 0),
+    [userArticles, userListings]
   )
   const totalLikes = useMemo(
     () => userArticles.reduce((sum, article) => sum + (article.likes || 0), 0),
@@ -204,10 +197,9 @@ export default function DashboardPage() {
     () => [
       { name: "Articles", count: userArticles.length },
       { name: "Listings", count: userListings.length },
-      { name: "Ads", count: userAds.length },
       { name: "Reviews", count: 0 },
     ],
-    [userAds.length, userArticles.length, userListings.length]
+    [userArticles.length, userListings.length]
   )
 
   const myContent = useMemo(
@@ -236,21 +228,16 @@ export default function DashboardPage() {
           year: "numeric",
         }),
       })),
-      ads: userAds.map((ad) => ({
-        id: ad.id,
-        title: ad.title,
-        status: ad.status,
-        views: ad.views ?? 0,
+      ads: userListings.map((listing) => ({
+        id: listing.id,
+        title: listing.title,
+        status: listing.status === "closed" ? "sold" : listing.status === "pending" ? "draft" : "active",
+        price: listing.price ? `$${listing.price}` : listing.priceRange || "N/A",
+        views: listing.views ?? 0,
         messages: 0,
-        price: `$${ad.price.toLocaleString()}`,
-        date: new Date(ad.createdAt).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }),
       })),
     }),
-    [userAds, userArticles, userListings]
+    [userArticles, userListings]
   )
 
   return (
@@ -728,13 +715,6 @@ export default function DashboardPage() {
                   </Link>
                 </Button>
                 <Button variant="outline" className="w-full justify-start" asChild>
-                  <Link href="/dashboard/ads/new">
-                    <Tag className="h-4 w-4 mr-3" />
-                    Post classified ad
-                    <ChevronRight className="h-4 w-4 ml-auto" />
-                  </Link>
-                </Button>
-                <Button variant="outline" className="w-full justify-start" asChild>
                   <Link href="/sbm">
                     <BarChart3 className="h-4 w-4 mr-3" />
                     Open Social Bookmarks
@@ -749,4 +729,3 @@ export default function DashboardPage() {
     </div>
   )
 }
-

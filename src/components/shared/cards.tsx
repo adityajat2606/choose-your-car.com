@@ -19,7 +19,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import type { Article, Listing, ClassifiedAd, User } from '@/types'
+import type { Article, ClassifiedAd, Listing, User } from '@/types'
 import { cn } from '@/lib/utils'
 import { loadFromStorage, saveToStorage, storageKeys } from '@/lib/local-storage'
 import { useToast } from '@/components/ui/use-toast'
@@ -210,35 +210,14 @@ export function ListingCard({ listing }: { listing: Listing }) {
   )
 }
 
-// Classified Ad Card
 export function ClassifiedAdCard({ ad }: { ad: ClassifiedAd }) {
-  const conditionColors = {
-    'new': 'bg-green-500/10 text-green-500',
-    'like-new': 'bg-blue-500/10 text-blue-500',
-    'good': 'bg-yellow-500/10 text-yellow-500',
-    'fair': 'bg-orange-500/10 text-orange-500',
-    'poor': 'bg-red-500/10 text-red-500',
-  }
-
-  const [savedIds, setSavedIds] = useState<string[]>([])
-  const displaySaves = useMemo(() => {
-    return ad.saves + (savedIds.includes(ad.id) ? 1 : 0)
-  }, [ad.id, ad.saves, savedIds])
-
-  useEffect(() => {
-    setSavedIds(loadFromStorage<string[]>(storageKeys.adSaves, []))
-  }, [])
-
   return (
-    <motion.div
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.2 }}
-    >
+    <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
       <Link href={`/classifieds/${ad.slug}`}>
         <Card className="group overflow-hidden border-border bg-card transition-all hover:border-muted-foreground/20">
-          <div className="relative aspect-square overflow-hidden">
+          <div className="relative aspect-[4/3] overflow-hidden">
             <Image
-              src={ad.images[0]}
+              src={ad.images?.[0] || '/placeholder.svg?height=640&width=960'}
               alt={ad.title}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -248,40 +227,30 @@ export function ClassifiedAdCard({ ad }: { ad: ClassifiedAd }) {
                 Featured
               </Badge>
             )}
-            <Badge className={cn('absolute right-3 top-3', conditionColors[ad.condition])}>
-              {ad.condition.charAt(0).toUpperCase() + ad.condition.slice(1).replace('-', ' ')}
-            </Badge>
           </div>
           <CardContent className="p-4">
-            <div className="mb-2 flex items-center gap-2">
+            <div className="mb-2 flex items-center justify-between">
               <Badge variant="secondary" className="text-xs">
                 {ad.category}
               </Badge>
-              {ad.isNegotiable && (
-                <span className="text-xs text-muted-foreground">Negotiable</span>
-              )}
+              <span className="text-sm font-semibold text-foreground">
+                {ad.currency} {ad.price}
+              </span>
             </div>
-            <h3 className="mb-1 line-clamp-2 font-semibold text-foreground">
-              {ad.title}
-            </h3>
-            <p className="mb-3 text-xl font-bold text-foreground">
-              ${ad.price.toLocaleString()}
-            </p>
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <MapPin className="h-3 w-3" />
-                {ad.location}
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1">
-                  <Eye className="h-3 w-3" />
-                  {ad.views}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Bookmark className="h-3 w-3" />
-                  {displaySaves}
-                </span>
-              </div>
+            <h3 className="mb-1 font-semibold text-foreground">{ad.title}</h3>
+            <div className="mb-3 flex items-center gap-1 text-sm text-muted-foreground">
+              <MapPin className="h-3 w-3" />
+              {ad.location}
+            </div>
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1">
+                <Eye className="h-3 w-3" />
+                {ad.views}
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <Heart className="h-3 w-3" />
+                {ad.saves}
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -289,6 +258,7 @@ export function ClassifiedAdCard({ ad }: { ad: ClassifiedAd }) {
     </motion.div>
   )
 }
+
 
 // Profile Card
 export function ProfileCard({ user, compact = false }: { user: User; compact?: boolean }) {

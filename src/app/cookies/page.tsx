@@ -19,7 +19,7 @@ export default function CookiesPage() {
         },
         {
           title: 'Analytics cookies',
-          description: 'Used to understand page performance and improve listing/classified discovery pathways.',
+          description: 'Used to understand page performance and improve listing discovery pathways.',
         },
         {
           title: 'Preference cookies',

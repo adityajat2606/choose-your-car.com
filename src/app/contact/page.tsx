@@ -6,6 +6,8 @@ import { getFactoryState } from '@/design/factory/get-factory-state'
 import { getProductKind } from '@/design/factory/get-product-kind'
 import { CONTACT_PAGE_OVERRIDE_ENABLED, ContactPageOverride } from '@/overrides/contact-page'
 
+const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'contact@example.com'
+
 function getTone(kind: ReturnType<typeof getProductKind>) {
   if (kind === 'directory') {
     return {
@@ -84,7 +86,7 @@ export default function ContactPage() {
           <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#4c6f88]">Contact {SITE_CONFIG.name}</p>
-              <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">Need help with listings, classifieds, or account support?</h1>
+              <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">Need help with listings or account support?</h1>
               <p className={`mt-5 max-w-2xl text-sm leading-8 ${tone.muted}`}>
                 Share your issue once and we route it to the right team quickly. We focus on practical next steps, not generic support replies.
               </p>
@@ -140,6 +142,19 @@ export default function ContactPage() {
           <div className={`rounded-[2rem] p-7 ${tone.panel}`}>
             <h2 className="text-2xl font-semibold">Send a message</h2>
             <p className={`mt-2 text-sm ${tone.muted}`}>We usually respond within one business day.</p>
+            
+            <div className={`mt-6 rounded-[1.6rem] p-5 ${tone.soft}`}>
+              <h3 className="text-lg font-semibold">Email us directly</h3>
+              <p className={`mt-2 text-sm ${tone.muted}`}>Click below to open your email client:</p>
+              <a
+                href={`mailto:${CONTACT_EMAIL}`}
+                className={`mt-4 inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold ${tone.action}`}
+              >
+                <Mail className="h-4 w-4" />
+                {CONTACT_EMAIL}
+              </a>
+            </div>
+
             <form className="mt-6 grid gap-4">
               <label className="grid gap-2 text-sm font-medium">
                 Name

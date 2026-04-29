@@ -12,11 +12,10 @@ import {
 import { useAuth } from '@/lib/auth-context'
 import { SITE_CONFIG, type TaskKey } from '@/lib/site-config'
 
-const taskIcons: Record<TaskKey, any> = {
+const taskIcons: Partial<Record<TaskKey, any>> = {
   article: FileText,
   listing: Building2,
   sbm: LayoutGrid,
-  classified: Tag,
   image: ImageIcon,
   profile: User,
   social: LayoutGrid,
@@ -39,7 +38,7 @@ export function NavbarAuthControls() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56 border-[#73A5CA]/25 bg-[rgba(254,253,223,0.98)]">
-          {SITE_CONFIG.tasks.filter((task) => task.enabled).map((task) => {
+          {SITE_CONFIG.tasks.filter((task) => task.enabled && task.key !== 'classified').map((task) => {
             const Icon = taskIcons[task.key] || LayoutGrid
             return (
               <DropdownMenuItem key={task.key} asChild>

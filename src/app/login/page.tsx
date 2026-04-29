@@ -42,7 +42,7 @@ export default function LoginPage() {
               <Sparkles className="h-3.5 w-3.5" />
               Business dashboard access
             </div>
-            <h1 className="mt-5 text-4xl font-semibold tracking-[-0.05em]">Sign in to manage listings and classifieds.</h1>
+            <h1 className="mt-5 text-4xl font-semibold tracking-[-0.05em]">Sign in to manage listings.</h1>
             <p className="mt-5 text-sm leading-8 text-[#2b3d4f]/90">Your account data is stored locally in this browser so you stay signed in between visits.</p>
             <div className="mt-8 grid gap-4">
               {[

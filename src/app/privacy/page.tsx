@@ -5,7 +5,7 @@ export default function PrivacyPage() {
     <BusinessInfoPage
       eyebrow="Legal"
       title="Privacy Policy"
-      description="How we collect, process, and protect personal information across accounts, listings, classifieds, and support workflows."
+      description="How we collect, process, and protect personal information across accounts, listings, and support workflows."
       metrics={[
         { value: 'April 18, 2026', label: 'Last updated' },
         { value: 'GDPR-ready', label: 'Privacy framework' },
@@ -15,7 +15,7 @@ export default function PrivacyPage() {
       cards={[
         {
           title: 'Information we collect',
-          description: 'Account profile details, listing/classified content, usage telemetry, and support communication metadata.',
+          description: 'Account profile details, listing content, usage telemetry, and support communication metadata.',
         },
         {
           title: 'How we use information',

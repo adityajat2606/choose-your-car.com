@@ -63,30 +63,6 @@ export function ListingCardSkeleton() {
   )
 }
 
-export function ClassifiedAdCardSkeleton() {
-  return (
-    <Card className="overflow-hidden border-border bg-card">
-      <div className="relative aspect-square overflow-hidden">
-        <Skeleton className="h-full w-full" />
-      </div>
-      <CardContent className="p-4">
-        <div className="mb-2 flex items-center gap-2">
-          <Skeleton className="h-5 w-16 rounded-full" />
-        </div>
-        <Skeleton className="mb-1 h-5 w-full" />
-        <Skeleton className="mb-1 h-5 w-3/4" />
-        <Skeleton className="mb-3 h-6 w-24" />
-        <div className="flex items-center justify-between">
-          <Skeleton className="h-4 w-24" />
-          <div className="flex gap-2">
-            <Skeleton className="h-4 w-10" />
-            <Skeleton className="h-4 w-10" />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
 
 export function ProfileCardSkeleton({ compact = false }: { compact?: boolean }) {
   return (
