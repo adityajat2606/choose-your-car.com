@@ -17,12 +17,6 @@ const stats = [
     description: 'Verified businesses and services'
   },
   {
-    icon: Tag,
-    value: '50K+',
-    label: 'Classified Ads',
-    description: 'Items listed and sold'
-  },
-  {
     icon: Users,
     value: '100K+',
     label: 'Active Users',

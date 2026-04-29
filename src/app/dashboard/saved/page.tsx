@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { PageShell } from '@/components/shared/page-shell'
 import { BookmarkCard } from '@/components/sbm/bookmark-card'
-import { ArticleCard, ListingCard, ClassifiedAdCard } from '@/components/shared/cards'
-import { mockBookmarks, mockArticles, mockBookmarkCollections, mockListings, mockClassifiedAds } from '@/data/mock-data'
+import { ArticleCard, ListingCard } from '@/components/shared/cards'
+import { mockBookmarks, mockArticles, mockBookmarkCollections, mockListings } from '@/data/mock-data'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -24,7 +24,7 @@ import {
   SheetDescription,
 } from '@/components/ui/sheet'
 import { useToast } from '@/components/ui/use-toast'
-import type { Article, Bookmark as BookmarkType, Listing, ClassifiedAd } from '@/types'
+import type { Article, Bookmark as BookmarkType, Listing } from '@/types'
 import { loadFromStorage, saveToStorage, storageKeys } from '@/lib/local-storage'
 
 export default function DashboardSavedPage() {
@@ -34,9 +34,6 @@ export default function DashboardSavedPage() {
   const [confirmClear, setConfirmClear] = useState(false)
   const [moveOpen, setMoveOpen] = useState(false)
   const [selectedCollection, setSelectedCollection] = useState<string | null>(null)
-  const [selectedAdIds, setSelectedAdIds] = useState<string[]>([])
-  const [activeAdSheetId, setActiveAdSheetId] = useState<string | null>(null)
-  const [confirmClearAds, setConfirmClearAds] = useState(false)
   const defaultSavedBookmarkIds = useMemo(
     () => mockBookmarks.filter((bookmark) => bookmark.isSaved).map((bookmark) => bookmark.id),
     []
@@ -44,21 +41,17 @@ export default function DashboardSavedPage() {
   const [savedIds, setSavedIds] = useState<string[]>(defaultSavedBookmarkIds)
   const [savedArticleIds, setSavedArticleIds] = useState<string[]>([])
   const [savedListingIds, setSavedListingIds] = useState<string[]>([])
-  const [savedAdIds, setSavedAdIds] = useState<string[]>([])
   const [storedBookmarks, setStoredBookmarks] = useState<BookmarkType[]>([])
   const [storedArticles, setStoredArticles] = useState<Article[]>([])
   const [storedListings, setStoredListings] = useState<Listing[]>([])
-  const [storedAds, setStoredAds] = useState<ClassifiedAd[]>([])
 
   useEffect(() => {
     setSavedIds(loadFromStorage<string[]>(storageKeys.bookmarkSaves, defaultSavedBookmarkIds))
     setSavedArticleIds(loadFromStorage<string[]>(storageKeys.articleSaves, []))
     setSavedListingIds(loadFromStorage<string[]>(storageKeys.listingSaves, []))
-    setSavedAdIds(loadFromStorage<string[]>(storageKeys.adSaves, []))
     setStoredBookmarks(loadFromStorage<BookmarkType[]>(storageKeys.bookmarks, []))
     setStoredArticles(loadFromStorage<Article[]>(storageKeys.articles, []))
     setStoredListings(loadFromStorage<Listing[]>(storageKeys.listings, []))
-    setStoredAds(loadFromStorage<ClassifiedAd[]>(storageKeys.ads, []))
   }, [defaultSavedBookmarkIds])
   const allBookmarks = useMemo(() => {
     const map = new Map<string, BookmarkType>()
@@ -98,23 +91,6 @@ export default function DashboardSavedPage() {
   }, [storedListings])
   const savedListings = allListings.filter((listing) => savedListingIds.includes(listing.id))
 
-  const allAds = useMemo(() => {
-    const map = new Map<string, ClassifiedAd>()
-    storedAds.forEach((ad) => map.set(ad.id, ad))
-    mockClassifiedAds.forEach((ad) => {
-      if (!map.has(ad.id)) {
-        map.set(ad.id, ad)
-      }
-    })
-    return Array.from(map.values())
-  }, [storedAds])
-  const savedAds = allAds.filter((ad) => savedAdIds.includes(ad.id))
-  const allAdsSelected = selectedAdIds.length === savedAds.length && savedAds.length > 0
-  const activeAd = useMemo(
-    () => savedAds.find((ad) => ad.id === activeAdSheetId),
-    [activeAdSheetId, savedAds]
-  )
-
   const activeBookmark = useMemo(
     () => savedBookmarks.find((bookmark) => bookmark.id === activeSheetId),
     [activeSheetId, savedBookmarks]
@@ -148,25 +124,6 @@ export default function DashboardSavedPage() {
     const nextIds = savedListingIds.filter((savedId) => savedId !== id)
     setSavedListingIds(nextIds)
     saveToStorage(storageKeys.listingSaves, nextIds)
-  }
-
-  const handleRemoveSavedAd = (id: string) => {
-    const nextIds = savedAdIds.filter((savedId) => savedId !== id)
-    setSavedAdIds(nextIds)
-    saveToStorage(storageKeys.adSaves, nextIds)
-  }
-
-  const handleBulkAdAction = (action: string) => {
-    if (action === 'Removed') {
-      const nextIds = savedAdIds.filter((id) => !selectedAdIds.includes(id))
-      setSavedAdIds(nextIds)
-      saveToStorage(storageKeys.adSaves, nextIds)
-    }
-    toast({
-      title: `${action} complete`,
-      description: `${selectedAdIds.length} ads updated.`,
-    })
-    setSelectedAdIds([])
   }
 
   return (
@@ -310,82 +267,6 @@ export default function DashboardSavedPage() {
             </div>
           )}
         </div>
-
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">Saved Ads</h2>
-          {savedAds.length === 0 ? (
-            <p className="mt-2 text-sm text-muted-foreground">No saved ads yet.</p>
-          ) : (
-            <div className="mt-4 space-y-4">
-              <Card className="border-border bg-card">
-                <CardContent className="p-4 flex items-center gap-3">
-                  <Checkbox
-                    checked={allAdsSelected}
-                    onCheckedChange={(checked) => setSelectedAdIds(checked ? savedAds.map((ad) => ad.id) : [])}
-                  />
-                  <span className="text-sm text-muted-foreground">Select all</span>
-                </CardContent>
-              </Card>
-
-              {selectedAdIds.length > 0 && (
-                <Card className="border-border bg-secondary/40">
-                  <CardContent className="p-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                    <div className="text-sm text-muted-foreground">{selectedAdIds.length} selected</div>
-                    <div className="flex flex-wrap gap-2">
-                      <Button size="sm" variant="outline" onClick={() => handleBulkAdAction('Shared')}>
-                        Share
-                      </Button>
-                      <Button size="sm" variant="destructive" onClick={() => handleBulkAdAction('Removed')}>
-                        Remove
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={() => setConfirmClearAds(true)}>
-                        Clear All
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {savedAds.map((ad) => (
-                <Card key={ad.id} className="border-border bg-card">
-                  <CardContent className="p-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <div className="flex items-start gap-3">
-                      <Checkbox
-                        checked={selectedAdIds.includes(ad.id)}
-                        onCheckedChange={() =>
-                          setSelectedAdIds((prev) =>
-                            prev.includes(ad.id) ? prev.filter((id) => id !== ad.id) : [...prev, ad.id]
-                          )
-                        }
-                      />
-                      <div>
-                        <p className="text-sm font-semibold text-foreground">{ad.title}</p>
-                        <p className="text-xs text-muted-foreground">{ad.location}</p>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Button size="sm" variant="outline" onClick={() => setActiveAdSheetId(ad.id)}>
-                        Preview
-                      </Button>
-                      <Button size="sm" variant="outline" asChild>
-                        <a href={`/classifieds/${ad.slug}`}>Open</a>
-                      </Button>
-                      <Button size="sm" variant="destructive" onClick={() => handleRemoveSavedAd(ad.id)}>
-                        Remove
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {savedAds.map((ad) => (
-                  <ClassifiedAdCard key={`card-${ad.id}`} ad={ad} />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
       </div>
 
       <Dialog open={confirmClear} onOpenChange={setConfirmClear}>
@@ -446,30 +327,6 @@ export default function DashboardSavedPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={confirmClearAds} onOpenChange={setConfirmClearAds}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Clear all saved ads?</DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-muted-foreground">This will remove all saved ads from your profile.</p>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmClearAds(false)}>Cancel</Button>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                saveToStorage(storageKeys.adSaves, [])
-                setSavedAdIds([])
-                setSelectedAdIds([])
-                toast({ title: 'Saved ads cleared', description: 'All saved ads were removed.' })
-                setConfirmClearAds(false)
-              }}
-            >
-              Confirm
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       <Sheet open={Boolean(activeSheetId)} onOpenChange={() => setActiveSheetId(null)}>
         <SheetContent className="w-full sm:max-w-lg">
           <SheetHeader>
@@ -497,32 +354,6 @@ export default function DashboardSavedPage() {
               </div>
               <Button asChild>
                 <a href={activeBookmark.url} target="_blank" rel="noreferrer">Open Link</a>
-              </Button>
-            </div>
-          )}
-        </SheetContent>
-      </Sheet>
-
-      <Sheet open={Boolean(activeAdSheetId)} onOpenChange={() => setActiveAdSheetId(null)}>
-        <SheetContent className="w-full sm:max-w-lg">
-          <SheetHeader>
-            <SheetTitle>Ad Preview</SheetTitle>
-            <SheetDescription>Quick glance before opening the ad.</SheetDescription>
-          </SheetHeader>
-          {activeAd && (
-            <div className="mt-6 space-y-4">
-              <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border bg-muted">
-                <Image
-                  src={activeAd.images[0]}
-                  alt={activeAd.title}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <h3 className="text-xl font-semibold text-foreground">{activeAd.title}</h3>
-              <p className="text-sm text-muted-foreground">{activeAd.description}</p>
-              <Button asChild>
-                <a href={`/classifieds/${activeAd.slug}`}>Open Ad</a>
               </Button>
             </div>
           )}

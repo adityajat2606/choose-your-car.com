@@ -25,9 +25,7 @@ export function TaskFeedCarousel({
                   ? "snap-start flex-[0_0_240px] sm:flex-[0_0_280px] lg:flex-[0_0_320px]"
                   : task.key === "pdf"
                     ? "snap-start flex-[0_0_220px] sm:flex-[0_0_250px] lg:flex-[0_0_280px]"
-                    : task.key === "classified"
-                      ? "snap-start flex-[0_0_280px] sm:flex-[0_0_320px] lg:flex-[0_0_360px]"
-                      : "snap-start flex-[0_0_260px] sm:flex-[0_0_300px] lg:flex-[0_0_340px]"
+                    : "snap-start flex-[0_0_260px] sm:flex-[0_0_300px] lg:flex-[0_0_340px]"
             }
           >
             <TaskPostCard

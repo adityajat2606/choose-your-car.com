@@ -45,7 +45,7 @@ export default function RegisterPage() {
               Join local marketplace
             </div>
             <h1 className="mt-5 text-4xl font-semibold tracking-[-0.05em]">Create your business listing account.</h1>
-            <p className="mt-5 text-sm leading-8 text-[#2b3d4f]/90">Start publishing listings, classifieds, and service profiles with a directory-first workflow.</p>
+            <p className="mt-5 text-sm leading-8 text-[#2b3d4f]/90">Start publishing listings and service profiles with a directory-first workflow.</p>
             <div className="mt-8 grid gap-4">
               {[
                 'Fast onboarding for local businesses',

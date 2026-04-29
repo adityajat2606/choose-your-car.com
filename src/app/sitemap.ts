@@ -21,7 +21,6 @@ const STATIC_ROUTES: StaticSitemapRoute[] = [
   { path: "/", changeFrequency: "hourly", priority: 1 },
   { path: "/listings", changeFrequency: "daily", priority: 0.95 },
   { path: "/articles", changeFrequency: "daily", priority: 0.95 },
-  { path: "/classifieds", changeFrequency: "daily", priority: 0.88 },
   { path: "/images", changeFrequency: "daily", priority: 0.88 },
   { path: "/profile", changeFrequency: "daily", priority: 0.82 },
   { path: "/sbm", changeFrequency: "daily", priority: 0.82 },

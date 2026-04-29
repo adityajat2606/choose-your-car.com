@@ -5,7 +5,7 @@ export default function HelpPage() {
     <BusinessInfoPage
       eyebrow="Resources"
       title="Help Center"
-      description="Get clear answers on posting, search, account access, listing quality, and classifieds best practices."
+      description="Get clear answers on posting, search, account access, and listing quality best practices."
       actions={[
         { label: 'View system status', href: '/status', variant: 'outline' },
         { label: 'Contact support', href: '/contact' },
@@ -22,7 +22,7 @@ export default function HelpPage() {
           description: 'Recover access, update profile preferences, and manage sign-in safely across devices.',
         },
         {
-          title: 'Listing and classified publishing',
+          title: 'Listing publishing',
           description: 'Learn formatting tips, media guidelines, and how to improve visibility in search and category feeds.',
         },
         {
@@ -39,7 +39,7 @@ export default function HelpPage() {
           title: 'Popular help topics',
           items: [
             'How to create high-converting listings',
-            'How to renew or update a classified post',
+            'How to renew or update a listing',
             'How to save searches and revisit results',
             'How moderation and review timelines work',
           ],

@@ -18,11 +18,10 @@ const NavbarAuthControls = dynamic(() => import('@/components/shared/navbar-auth
   loading: () => null,
 })
 
-const taskIcons: Record<TaskKey, any> = {
+const taskIcons: Partial<Record<TaskKey, any>> = {
   article: FileText,
   listing: Building2,
   sbm: LayoutGrid,
-  classified: Tag,
   image: ImageIcon,
   profile: User,
   social: LayoutGrid,
@@ -100,8 +99,8 @@ export function Navbar() {
   const navigation = useMemo(
     () =>
       SITE_CONFIG.tasks
-        .filter((task) => task.enabled && task.key !== 'profile')
-        .filter((task) => ['listing', 'classified'].includes(task.key)),
+        .filter((task) => task.enabled && task.key !== 'profile' && task.key !== 'classified')
+        .filter((task) => ['listing'].includes(task.key)),
     []
   )
   const primaryNavigation = navigation.slice(0, 5)
@@ -111,7 +110,7 @@ export function Navbar() {
     icon: taskIcons[task.key] || LayoutGrid,
   }))
   const primaryTask = SITE_CONFIG.tasks.find((task) => task.key === recipe.primaryTask && task.enabled) || primaryNavigation[0]
-  const isDirectoryProduct = recipe.homeLayout === 'listing-home' || recipe.homeLayout === 'classified-home'
+  const isDirectoryProduct = recipe.homeLayout === 'listing-home'
 
   if (isDirectoryProduct) {
     const palette = directoryPalette[(recipe.brandPack === 'market-utility' ? 'market-utility' : 'directory-clean') as keyof typeof directoryPalette]
@@ -169,12 +168,6 @@ export function Navbar() {
                 <Button variant="ghost" size="sm" asChild className="rounded-full px-4 text-[#1f2d3a] hover:bg-white/40 hover:text-[#1f2d3a]">
                   <Link href="/login">Sign In</Link>
                 </Button>
-                <Button size="sm" asChild className={cn('rounded-full', palette.cta)}>
-                  <Link href="/register">
-                    <Plus className="mr-1 h-4 w-4" />
-                    Add Listing
-                  </Link>
-                </Button>
               </div>
             )}
 
@@ -202,9 +195,6 @@ export function Navbar() {
               <div className="grid grid-cols-2 gap-2">
                 <Link href="/listings" onClick={() => setIsMobileMenuOpen(false)} className="rounded-xl bg-white/45 px-4 py-2.5 text-center text-sm font-semibold text-[#1f2d3a]">
                   Listings
-                </Link>
-                <Link href="/classifieds" onClick={() => setIsMobileMenuOpen(false)} className="rounded-xl bg-white/45 px-4 py-2.5 text-center text-sm font-semibold text-[#1f2d3a]">
-                  Classifieds
                 </Link>
               </div>
 
